@@ -1,0 +1,6 @@
+{
+  "name": "Mind Notepad",
+  "description": "A feature-packed notepad app with light and dark theme modes, note pinning, rich categories, color tagging, and instant search.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
