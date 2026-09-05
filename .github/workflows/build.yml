@@ -1,5 +1,5 @@
 name: Build APK
-on: [push, workflow_dispatch] # Manual trigger ke liye
+on: [push, workflow_dispatch]
 
 jobs:
   build:
@@ -13,16 +13,22 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
 
-      - name: Grant Execute Permission
-        run: chmod +x gradlew
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+
+      - name: Generate Wrapper (If missing)
+        run: |
+          if [ ! -f gradlew ]; then
+            gradle wrapper
+          fi
+          chmod +x gradlew
 
       - name: Build Debug APK
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: my-notepad-apk
-          path: app/build/outputs/apk/debug/*.apk
+          name: Mind-Notepad-APK
+          path: "**/build/outputs/apk/debug/*.apk"
