@@ -3,6 +3,7 @@ package com.example.ads
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import java.io.File
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.FullScreenContentCallback
@@ -27,6 +28,17 @@ object InterstitialAdManager {
    */
   fun init(context: Context) {
     if (isInitialized) return
+
+    // Pre-create WebView cache directories to prevent Chromium simple_file_enumerator warnings
+    try {
+      val jsCache = File(context.cacheDir, "WebView/Default/HTTP Cache/Code Cache/js")
+      if (!jsCache.exists()) jsCache.mkdirs()
+      val wasmCache = File(context.cacheDir, "WebView/Default/HTTP Cache/Code Cache/wasm")
+      if (!wasmCache.exists()) wasmCache.mkdirs()
+    } catch (_: Exception) {
+      // Ignore cache dir creation errors
+    }
+
     try {
       MobileAds.initialize(context) { status ->
         Log.d(TAG, "AdMob MobileAds initialized: $status")
