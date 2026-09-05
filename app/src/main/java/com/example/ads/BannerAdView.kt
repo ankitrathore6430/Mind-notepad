@@ -40,6 +40,7 @@ fun BannerAdView(
     AdView(context).apply {
       setAdSize(AdSize.BANNER)
       this.adUnitId = adUnitId
+      setLayerType(android.view.View.LAYER_TYPE_SOFTWARE, null)
       adListener = object : AdListener() {
         override fun onAdLoaded() {
           super.onAdLoaded()

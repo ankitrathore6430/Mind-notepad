@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Mind Notepad</string>
+    <!-- Placeholder to silence Play Services Measurement check when Firebase is not connected -->
+    <string name="google_app_id" translatable="false">1:000000000000:android:0000000000000000000000</string>
 </resources>
