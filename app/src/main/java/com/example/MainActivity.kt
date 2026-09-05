@@ -11,7 +11,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.safeDrawingPadding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,7 +41,10 @@ class MainActivity : ComponentActivity() {
       val themeMode by viewModel.themeMode.collectAsStateWithLifecycle()
 
       MindNotepadTheme(themeMode = themeMode) {
-        Surface(modifier = Modifier.fillMaxSize().safeDrawingPadding()) {
+        Surface(
+          modifier = Modifier.fillMaxSize(),
+          color = MaterialTheme.colorScheme.background
+        ) {
           MindNotepadApp(viewModel = viewModel)
         }
       }
