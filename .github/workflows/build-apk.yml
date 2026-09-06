@@ -65,6 +65,11 @@ jobs:
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
+          echo "=== Build Environment ==="
+          echo "GitHub Run Number: $GITHUB_RUN_NUMBER"
+          echo "Custom Version Code: '$VERSION_CODE'"
+          echo "Custom Version Name: '$VERSION_NAME'"
+          
           echo "Building Play Store Release Bundle (.aab)..."
           ./gradlew bundleRelease --stacktrace
           

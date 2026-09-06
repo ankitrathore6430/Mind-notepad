@@ -18,8 +18,13 @@ android {
     minSdk = 24
     targetSdk = 36
 
-    val envVersionCode = (System.getenv("VERSION_CODE") ?: System.getenv("GITHUB_RUN_NUMBER"))?.toIntOrNull() ?: 1
-    val envVersionName = System.getenv("VERSION_NAME") ?: "1.0.$envVersionCode"
+    val rawVersionCode = System.getenv("VERSION_CODE")?.takeIf { it.isNotBlank() }
+      ?: System.getenv("GITHUB_RUN_NUMBER")?.takeIf { it.isNotBlank() }
+    val envVersionCode = rawVersionCode?.toIntOrNull() ?: 1
+
+    val rawVersionName = System.getenv("VERSION_NAME")?.takeIf { it.isNotBlank() }
+    val envVersionName = rawVersionName ?: "1.0.$envVersionCode"
+
     versionCode = envVersionCode
     versionName = envVersionName
 
