@@ -16,10 +16,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
 
-        <!-- Google AdMob Application ID: Replace in future with your live AdMob App ID -->
+        <!-- Google AdMob Application ID -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713"/>
+            android:value="ca-app-pub-3286067390245856~7901388310"/>
 
         <!-- Disable Firebase / Google Analytics measurement as this app works offline without Firebase -->
         <meta-data

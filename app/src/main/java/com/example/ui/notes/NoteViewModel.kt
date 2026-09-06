@@ -18,6 +18,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class NoteViewModel(
   application: Application,
@@ -25,8 +27,18 @@ class NoteViewModel(
   private val themePrefs: ThemePreferences
 ) : AndroidViewModel(application) {
 
+  private val saveMutex = Mutex()
+
   init {
     viewModelScope.launch {
+      // Clean up any ghost/blank notes from previous sessions
+      val existingNotes = repository.getAllNotes().first()
+      existingNotes.forEach { note ->
+        if (note.title.isBlank() && isBlankContent(note.content)) {
+          repository.delete(note)
+        }
+      }
+
       val firstList = repository.getAllNotes().first()
       if (firstList.isEmpty()) {
         val note1 = Note(
@@ -89,7 +101,7 @@ class NoteViewModel(
     _searchQuery,
     _selectedCategory
   ) { notes, query, category ->
-    var result = notes
+    var result = notes.filter { it.title.isNotBlank() || !isBlankContent(it.content) }
     val trimmed = query.trim()
     if (trimmed.isNotEmpty()) {
       result = result.filter {
@@ -183,7 +195,23 @@ class NoteViewModel(
   }
 
   fun closeEditor() {
-    // Auto-save before closing if non-empty
+    val currentId = _editingNoteId.value
+    val title = draftTitle.value.trim()
+    val content = draftContent.value.trim()
+    val isBlank = title.isEmpty() && isBlankContent(content)
+
+    if (isBlank) {
+      if (currentId != null && currentId > 0) {
+        viewModelScope.launch {
+          saveMutex.withLock {
+            repository.deleteById(currentId)
+          }
+        }
+      }
+      _editingNoteId.value = null
+      return
+    }
+
     saveCurrentDraft()
     _editingNoteId.value = null
   }
@@ -192,50 +220,57 @@ class NoteViewModel(
     val currentId = _editingNoteId.value ?: return
     val title = draftTitle.value.trim()
     val content = draftContent.value.trim()
+    val isBlank = title.isEmpty() && isBlankContent(content)
 
     // If completely empty and is new note, do nothing
-    if (title.isEmpty() && content.isEmpty()) {
+    if (isBlank) {
       if (currentId > 0) {
-        // user deleted all text from existing note, keep it or remove
         viewModelScope.launch {
-          repository.deleteById(currentId)
+          saveMutex.withLock {
+            repository.deleteById(currentId)
+          }
         }
       }
       return
     }
 
     viewModelScope.launch {
-      val now = System.currentTimeMillis()
-      if (currentId == -1L) {
-        // New note
-        val newNote = Note(
-          id = 0,
-          title = title,
-          content = content,
-          category = draftCategory.value.ifBlank { "General" },
-          colorIndex = draftColorIndex.value,
-          isPinned = draftIsPinned.value,
-          createdAt = now,
-          updatedAt = now
-        )
-        val createdId = repository.insert(newNote)
-        _editingNoteId.value = createdId
-      } else {
-        // Update existing note
-        val existing = repository.getNoteByIdOnce(currentId)
-        val updated = Note(
-          id = currentId,
-          title = title,
-          content = content,
-          category = draftCategory.value.ifBlank { "General" },
-          colorIndex = draftColorIndex.value,
-          isPinned = draftIsPinned.value,
-          createdAt = existing?.createdAt ?: now,
-          updatedAt = now
-        )
-        repository.update(updated)
+      saveMutex.withLock {
+        val activeId = _editingNoteId.value ?: return@withLock
+        val now = System.currentTimeMillis()
+        if (activeId == -1L) {
+          // New note
+          val newNote = Note(
+            id = 0,
+            title = title,
+            content = content,
+            category = draftCategory.value.ifBlank { "General" },
+            colorIndex = draftColorIndex.value,
+            isPinned = draftIsPinned.value,
+            createdAt = now,
+            updatedAt = now
+          )
+          val createdId = repository.insert(newNote)
+          if (_editingNoteId.value != null) {
+            _editingNoteId.value = createdId
+          }
+        } else if (activeId > 0) {
+          // Update existing note
+          val existing = repository.getNoteByIdOnce(activeId)
+          val updated = Note(
+            id = activeId,
+            title = title,
+            content = content,
+            category = draftCategory.value.ifBlank { "General" },
+            colorIndex = draftColorIndex.value,
+            isPinned = draftIsPinned.value,
+            createdAt = existing?.createdAt ?: now,
+            updatedAt = now
+          )
+          repository.update(updated)
+        }
+        lastEditedTime.value = now
       }
-      lastEditedTime.value = now
     }
   }
 
@@ -243,10 +278,25 @@ class NoteViewModel(
     val currentId = _editingNoteId.value
     if (currentId != null && currentId > 0) {
       viewModelScope.launch {
-        repository.deleteById(currentId)
+        saveMutex.withLock {
+          repository.deleteById(currentId)
+        }
       }
     }
     _editingNoteId.value = null
+  }
+
+  companion object {
+    fun isBlankContent(content: String): Boolean {
+      if (content.isBlank()) return true
+      val stripped = content.replace(Regex("<[^>]*>"), "")
+        .replace("&nbsp;", " ")
+        .replace("&amp;", "&")
+        .replace("&lt;", "<")
+        .replace("&gt;", ">")
+        .trim()
+      return stripped.isEmpty()
+    }
   }
 
   // Factory

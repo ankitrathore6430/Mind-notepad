@@ -169,6 +169,9 @@ data class RichNoteContent(
    * Serializes to clean HTML for persistent Room storage.
    */
   fun toHtml(): String {
+    if (plainText.isBlank()) {
+      return ""
+    }
     val lines = plainText.split('\n')
     val result = StringBuilder()
 

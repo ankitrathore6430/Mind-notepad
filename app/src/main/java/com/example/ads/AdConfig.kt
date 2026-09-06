@@ -8,20 +8,17 @@ package com.example.ads
  */
 object AdConfig {
   /**
-   * AdMob App ID (Google Test ID by default)
-   * Real app ID AndroidManifest.xml me bhi update karni hoti hai.
+   * AdMob App ID
    */
-  const val ADMOB_APP_ID = "ca-app-pub-3940256099942544~3347511713"
+  const val ADMOB_APP_ID = "ca-app-pub-3286067390245856~7901388310"
 
   /**
    * Home Screen Banner Ad Unit ID
-   * Default: ca-app-pub-3940256099942544/6300978111
    */
-  var BANNER_AD_UNIT_ID: String = "ca-app-pub-3940256099942544/6300978111"
+  var BANNER_AD_UNIT_ID: String = "ca-app-pub-3286067390245856/7322803811"
 
   /**
    * Interstitial (Full Screen) Ad Unit ID
-   * Default: ca-app-pub-3940256099942544/1033173712
    */
-  var INTERSTITIAL_AD_UNIT_ID: String = "ca-app-pub-3940256099942544/1033173712"
+  var INTERSTITIAL_AD_UNIT_ID: String = "ca-app-pub-3286067390245856/3365201331"
 }
