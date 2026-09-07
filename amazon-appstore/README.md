@@ -9,10 +9,14 @@ This folder contains all the assets, texts, metadata, icons, and instructions ne
 ```text
 amazon-appstore/
 ├── icons/
-│   ├── icon_512x512.png         <-- Large App Icon (512x512 px)
-│   └── icon_114x114.png         <-- Small App Icon (114x114 px)
+│   ├── icon_512x512.png         <-- Large App Icon (512x512 px PNG)
+│   └── icon_114x114.png         <-- Small App Icon (114x114 px PNG)
+├── screenshots/
+│   ├── screenshot_1_home_dashboard.png    <-- Screen 1: Dashboard (1080x1920 RGB PNG)
+│   ├── screenshot_2_rich_text_editor.png  <-- Screen 2: Editor (1080x1920 RGB PNG)
+│   └── screenshot_3_dark_mode.png         <-- Screen 3: Dark Mode (1080x1920 RGB PNG)
 ├── AMAZON_APPSTORE_LISTING.md    <-- Complete Title, Descriptions, Bullets, Keywords
-├── SCREENSHOTS_GUIDE.md          <-- Screenshot dimensions & capture guide
+├── SCREENSHOTS_GUIDE.md          <-- Screenshot dimensions & details
 ├── privacy_policy.html           <-- Ready-to-host Privacy Policy for GitHub Pages
 └── README.md                     <-- Quick overview and checklist
 ```
