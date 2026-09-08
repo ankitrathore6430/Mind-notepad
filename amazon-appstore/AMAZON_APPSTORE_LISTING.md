@@ -6,6 +6,7 @@ Use these exact texts and values when filling out your app submission on the [Am
 
 ## 1. General Information
 - **App Title**: `Mind Notepad - Notes & Notebook`
+- **Package Name / Application ID**: `com.ankit.mindnotepad`
 - **App SKU**: `MIND_NOTEPAD_01`
 - **Category**: `Productivity`
 - **Subcategory**: `Notes & Organizers` (or `Utilities`)
